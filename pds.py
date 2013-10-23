@@ -1,6 +1,7 @@
 import sys, os
 import re
 import argparse as ap
+import math
 
 parser = ap.ArgumentParser()
 parser.add_argument('input', help='input file')
@@ -70,10 +71,10 @@ def clearOptitions():
 	
 def defaultOptions():
 	global floatopt, centering, width, numfloatsperrow, subcaptions
-	if floatopt==None: floatopt=r'htpb'
+	if floatopt==None: floatopt=r'ht'
 	if centering==None: centering=True
-	if width==None: width=r'\linewidth'
 	if numfloatsperrow==None: numfloatsperrow=1;
+	if width==None: width=r'%.2f\linewidth' % (0.9/numfloatsperrow) # depend on numfloatsperrow
 	if subcaptions==None: subcaptions=[""] # or [None]
 	
 def insertgraph(filename):
@@ -93,6 +94,9 @@ def insertgraph(filename):
 	return s
 	
 def insertgraphics(filenames):
+	global numfloatsperrow
+	if (numfloatsperrow == None):
+		numfloatsperrow = math.ceil(math.sqrt(len(filenames)))
 	defaultOptions()
 	s = '\n\\begin{figure}[%s]\n' % floatopt
 	if centering:
@@ -189,8 +193,12 @@ for (i,line) in enumerate(lines):
 			raise Exception(_COMMENT_MARKER + "scriptstart:<lang> expected before line %d" % _LINE_NUMBER)
 	else:
 		if _SCRIPT_MODE:
-			if line.startswith(_COMMENT_MARKER):
-				_SCRIPT.append(line[1:]) # delete %
+			if line.startswith(_COMMENT_MARKER*2) or \
+				line.startswith(_COMMENT_MARKER + '#') or \
+				not line.strip(): # '%%', '%#', or blank line
+				pass
+			elif line.startswith(_COMMENT_MARKER): # '%' scriptcode
+				_SCRIPT.append(line[len(_COMMENT_MARKER):]) # delete %
 			else:
 				raise Exception("you must comment in script mode at line %d" % _LINE_NUMBER)
 		else: # Not in scirpt mode
