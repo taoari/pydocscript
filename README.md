@@ -28,27 +28,17 @@ LaTeX Examples
 Input:
 
 ```latex
-%scriptstart:python
-%label='fig:diff'
-%width=r'0.8\linewidth'
-%s=insertgraph('res/rw2d.pdf')
-%_RV.append(s)
-%scriptend
+%_RV.append(insertgraph('res/rw2d.pdf'))
 ```
 
 Output:
 
 ```latex
-%PDS start Python Document Script generated, Do !!NOT!! modify
-
-\begin{figure}[htpb]
+\begin{figure}[ht]
 \begin{centering}
-\includegraphics[width=0.8\linewidth]{res/rw2d.pdf}
+\includegraphics[width=0.90\linewidth]{res/rw2d.pdf}
 \end{centering}
-\label{fig:diff}
 \end{figure}
-
-%PDS end
 ```
 
 ### Insert Images with SubCaptions and Each Row align 2 Images
@@ -56,19 +46,14 @@ Output:
 Input:
 
 ```latex
-%scriptstart:python
-%width=r'0.45\linewidth'
-%numfloatsperrow=2
 %subcaptions=["First", "Second", "Third", "Fourth"]
-%s=insertgraphics(['res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf'])
-%_RV.append(s)
-%scriptend
+%_RV.append(insertgraphics(['res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf']))
 ```
 
 Output:
 
 ```latex
-\begin{figure}[htpb]
+\begin{figure}[ht]
 \begin{centering}
 \subfloat[First]{\begin{centering}
 \includegraphics[width=0.45\linewidth]{res/rw2d.pdf}
@@ -95,18 +80,13 @@ Output:
 Input:
 
 ```latex
-%scriptstart
-%label='tab:res'
-%caption='Numerical Results of 2D Random Walk on Rectangular Lattices'
-%s=inserttable('res/numres.txt')
-%_RV.append(s)
-%scriptend
+%_RV.append(inserttable('res/numres.txt'))
 ```
 
 Output:
 
 ```latex
-\begin{table}[htpb]
+\begin{table}[ht]
 \begin{center}
 \begin{tabular}{ccccccc}
 \hline
@@ -119,8 +99,6 @@ $\lambda$ & $\tau$ & $D$ & $D_{mean}$ & $E$ & $D_{var}$ & $E$ \\
 \hline
 \end{tabular}
 \end{center}
-\label{tab:res}
-\caption{Numerical Results of 2D Random Walk on Rectangular Lattices}
 \end{table}
 ```
 
