@@ -44,34 +44,67 @@ centering=None
 width=None
 caption=None
 label=None
+numfloatsperrow=None
+subcaptions=None
 
 def clearOptitions():
-	global floatopt, centering, width, caption, label
+	global floatopt, centering, width, caption, label, numfloatsperrow, subcaptions
 	floatopt=None
 	centering=None
 	width=None
 	caption=None
 	label=None
+	numfloatsperrow=None
+	subcaptions=None
 	
 def defaultOptions():
-	global floatopt, centering, width
-	if floatopt==None: 
-		floatopt=r'htpb'
-	if centering==None: 
-		centering=True
-	if width==None: 
-		width=r'\linewidth'
+	global floatopt, centering, width, numfloatsperrow, subcaptions
+	if floatopt==None: floatopt=r'htpb'
+	if centering==None: centering=True
+	if width==None: width=r'\linewidth'
+	if numfloatsperrow==None: numfloatsperrow=1;
+	if subcaptions==None: subcaptions=[""] # or [None]
 	
 def insertgraph(filename):
 	defaultOptions()
 	s = '\n\\begin{figure}[%s]\n' % floatopt
 	if centering:
-		s += '\\centering\n'
+		s += '\\begin{centering}\n'
 	s += '\\includegraphics[width=%s]{%s}\n' % (width, filename)
-	if label:
-		s += '\\label{%s}\n' % label
+	if centering:
+		s += '\\end{centering}\n'
 	if caption:
 		s += '\\caption{%s}\n' % caption
+	if label:
+		s += '\\label{%s}\n' % label
+	s += '\\end{figure}\n'
+	_RV.append(s)
+	clearOptitions()
+	
+def insertgraphics(filenames):
+	defaultOptions()
+	s = '\n\\begin{figure}[%s]\n' % floatopt
+	if centering:
+		s += '\\begin{centering}\n'
+		
+	while len(subcaptions) < len(filenames):
+		subcaptions.append("")		
+	for (i,filename) in enumerate(filenames):
+		s += '\\subfloat[%s]{'  % subcaptions[i]
+		s += '\\begin{centering}\n'
+		s += '\\includegraphics[width=%s]{%s}\n' % (width, filename)
+		s += '\\end{centering}\n}' 
+		if (i+1) % numfloatsperrow == 0: # numer floats per row
+			s += '\n\n'
+		else:
+			s += ' '
+	
+	if centering:
+		s += '\\end{centering}\n'
+	if caption:
+		s += '\\caption{%s}\n' % caption
+	if label:
+		s += '\\label{%s}\n' % label
 	s += '\\end{figure}\n'
 	_RV.append(s)
 	clearOptitions()
@@ -85,7 +118,7 @@ def inserttable(filename):
 	c = len(lines[0].split('\t'))
 	s = '\n\\begin{table}[%s]\n' % floatopt
 	if centering:
-		s += '\\centering\n'
+		s += '\\begin{center}\n'
 	s += '\\begin{tabular}{' + 'c'*c + '}\n'
 	s += '\\hline\n'
 	for (i, line) in enumerate(lines):
@@ -96,6 +129,8 @@ def inserttable(filename):
 		s += ''.join(lines[1:])
 	s += '\\hline\n'	
 	s += '\\end{tabular}\n'	
+	if centering:
+		s += '\\end{center}\n'
 	if label:
 		s += '\\label{%s}\n' % label
 	if caption:
