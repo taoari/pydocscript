@@ -1,4 +1,7 @@
 *.aux
 *.log
+*.out
 *.pdf
-*.pds.tex
+*.pds.*
+*.pyc
+!res/*.pdf

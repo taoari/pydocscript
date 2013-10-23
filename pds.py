@@ -1,6 +1,5 @@
 import sys, os
 import re
-import numpy as np
 import argparse as ap
 
 parser = ap.ArgumentParser()
@@ -24,20 +23,32 @@ def defaultScriptLang(scriptLang):
 		return scriptLang
 	else:
 		return "python" 
+		
+_LINE_SEP_DICT = {'DOS':'\r\n', 'UNIX':'\n', 'MAC':'\r'}
+_COMMENT_MARKER_DICT = {'tex':'%', 'c':'//', 'cpp':'//', 'java':'//', 'python':'#'}
 
-_FILE_NAME=args.input		
+
+_FILE_NAME=args.input
+_FILE_EXT=os.path.splitext(_FILE_NAME)[1][1:] # do not include '.'
+_COMMENT_MARKER=_COMMENT_MARKER_DICT[_FILE_EXT]
 _FILE_FORMAT=getFileFormat(_FILE_NAME)
+_LINE_SEP=_LINE_SEP_DICT[_FILE_FORMAT]
+print 'File name: ' + _FILE_NAME
+print 'Comment marker: ' + _COMMENT_MARKER
+print 'File format: ' + _FILE_FORMAT
 
-_SCRIPT_START = re.compile(r"%\s*scriptstart:?(\w*)")
-_SCRIPT_END = re.compile(r"%\s*scriptend")
+_SCRIPT_START = re.compile(_COMMENT_MARKER + r"\s*scriptstart:?(\w*)")
+_SCRIPT_END = re.compile(_COMMENT_MARKER + r"\s*scriptend")
 _SCRIPT_MODE = False
 _SCRIPT_LANG = None
 _SCRIPT = [] # hold script content
-_RV_START = "%%PDS start Python Document Script generated, Do !!NOT!! modify\n"
-_RV_END = "\n%%PDS end\n"
+_RV_START = _COMMENT_MARKER + "PDS start Python Document Script generated, Do !!NOT!! modify\n"
+_RV_END = '\n' + _COMMENT_MARKER + "PDS end\n"
 _RV = [] # return value of _SCRIPT
 _DOC = [] # new document content
 
+##############################
+# LaTeX
 # global options for use in script
 floatopt=None
 centering=None
@@ -78,8 +89,8 @@ def insertgraph(filename):
 	if label:
 		s += '\\label{%s}\n' % label
 	s += '\\end{figure}\n'
-	_RV.append(s)
 	clearOptitions()
+	return s
 	
 def insertgraphics(filenames):
 	defaultOptions()
@@ -106,8 +117,8 @@ def insertgraphics(filenames):
 	if label:
 		s += '\\label{%s}\n' % label
 	s += '\\end{figure}\n'
-	_RV.append(s)
 	clearOptitions()
+	return s
 
 def inserttable(filename):
 	defaultOptions()
@@ -136,35 +147,15 @@ def inserttable(filename):
 	if caption:
 		s += '\\caption{%s}\n' % caption
 	s += '\\end{table}\n'
-	_RV.append(s)
 	clearOptitions()
+	return s
 	
-#def inserttable(filename):
-	#defaultOptions()
-	#t = np.genfromtxt(filename)
-	#(r,c) = t.shape
-	#s = '\n\\begin{table}[%s]\n' % floatopt
-	#if centering:
-		#s += '\\centering\n'
-	#s += '\\begin{tabular}{' + 'c'*c + '}\n'
-	#s += '\\hline\n'
-	#data = []
-	#for tr in t: # tr: table row
-		#data.append(' & '.join(str(tr)[1:-1].split()) + r'\\' + '\n')
-	#if r > 0:
-		#s += data[0] + '\\hline\n' # header
-	#if r > 1:
-		#s += ''.join(data[1:])
-	#s += '\\hline\n'	
-	#s += '\\end{tabular}\n'	
-	#if label:
-		#s += '\\label{%s}\n' % label
-	#if caption:
-		#s += '\\caption{%s}\n' % caption
-	#s += '\\end{table}\n'
-	#_RV.append(s)
-	#clearOptitions()
-	
+# end LaTeX
+############################
+
+# _SUBMODULE_NAME = 'pds_' + _FILE_EXT
+# exec('from %s import *' % _SUBMODULE_NAME)
+
 f = open(_FILE_NAME, 'U') # open as unix
 
 lines = f.readlines();
@@ -179,10 +170,9 @@ for (i,line) in enumerate(lines):
 			_SCRIPT_LANG = defaultScriptLang(m.group(1))
 			_SCRIPT = [] # clear _SCRIPT when a new script block start
 			_RV = [] # clear _RV
-			# print line
 			
 		else:
-			raise Exception("%%scriptend expected before line " % _LINE_NUMBER)
+			raise Exception(_COMMENT_MARKER + "scriptend expected before line %d" % _LINE_NUMBER)
 	elif _SCRIPT_END.match(line) != None:
 		m = _SCRIPT_END.match(line)
 		if _SCRIPT_MODE:
@@ -196,12 +186,10 @@ for (i,line) in enumerate(lines):
 				_DOC.extend(_RV)
 				_DOC.append(_RV_END)
 		else:
-			raise Exception("%%scriptstart:<lang> expected before line %d" % _LINE_NUMBER)
+			raise Exception(_COMMENT_MARKER + "scriptstart:<lang> expected before line %d" % _LINE_NUMBER)
 	else:
 		if _SCRIPT_MODE:
-			if line.startswith("%%"):
-				pass
-			elif line.startswith("%"):
+			if line.startswith(_COMMENT_MARKER):
 				_SCRIPT.append(line[1:]) # delete %
 			else:
 				raise Exception("you must comment in script mode at line %d" % _LINE_NUMBER)
@@ -221,4 +209,3 @@ else:
 f = open(OUTPUT_FILE, 'w')
 f.writelines(_DOC)
 f.close()
-

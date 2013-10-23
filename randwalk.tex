@@ -31,16 +31,19 @@ xrightmargin=2em}
 %scriptstart:python
 %label='fig:diff'
 %width=r'0.8\linewidth'
-%insertgraph('res/rw2d.pdf')
+%s=insertgraph('res/rw2d.pdf')
+%_RV.append(s)
 %
 %width=r'0.45\linewidth'
 %numfloatsperrow=2
 %subcaptions=["First", "Second", "Third", "Fourth"]
-%insertgraphics(['res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf'])
+%s=insertgraphics(['res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf', 'res/rw2d.pdf'])
+%_RV.append(s)
 %
 %label='tab:res'
 %caption='Numerical Results of 2D Random Walk on Rectangular Lattices'
-%inserttable('res/numres.txt')
+%s=inserttable('res/numres.txt')
+%_RV.append(s)
 %scriptend
 
 \end{document}
