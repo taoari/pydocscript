@@ -23,6 +23,20 @@ so inside the script block, just use
 LaTeX Examples
 --------------
 
+**Note** that you can set options before insert figures or tables
+
+Avaiable options are: 
+
+* floatopt = 'ht'
+* centering = True
+* label = None
+* caption = None
+* subcaptions = None
+* numfloatperrow = ceil(sqrt(input_size))
+* width = (0.9/numfloatsperrow)\\linewidth
+
+    
+    
 ### Insert an Image
 
 Input:
@@ -42,6 +56,8 @@ Output:
 ```
 
 ### Insert Images with SubCaptions and Each Row align 2 Images
+
+![pds_subfig](web/pds_subfig.png)
 
 Input:
 
@@ -77,6 +93,8 @@ Output:
 
 ### Insert a table from a txt file
 
+![pds_table](web/pds_table.png)
+
 Input:
 
 ```latex
@@ -101,4 +119,3 @@ $\lambda$ & $\tau$ & $D$ & $D_{mean}$ & $E$ & $D_{var}$ & $E$ \\
 \end{center}
 \end{table}
 ```
-
