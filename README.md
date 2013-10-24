@@ -5,6 +5,10 @@ This project provides a general Document Scripting framework, which is like Java
 
 	Usage: ./pbs randwalk.tex
 	
+for Windows users:
+
+	Usage: python pbs.py randwalk.tex
+	
 How to write scripts
 --------------------
 
@@ -22,6 +26,10 @@ so inside the script block, just use
 
 LaTeX Examples
 --------------
+
+The .tex file is written with LyX compatible in mind, you can convert it to .lyx with
+
+	tex2lyx randwalk.pbs.tex
 
 **Note** that you can set options before insert figures or tables
 
