@@ -215,5 +215,9 @@ else:
 	OUTPUT_FILE = fn+".pds"+ext
 
 f = open(OUTPUT_FILE, 'w')
-f.writelines(_DOC)
+if _LINE_SEP == '\n':
+	f.writelines(_DOC)
+else:
+	for line in _DOC:
+		f.write(line.replace('\n', _LINE_SEP))
 f.close()
